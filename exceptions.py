@@ -1,0 +1,3 @@
+
+class UnknownHardwareException(Exception):
+    pass
