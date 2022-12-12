@@ -1,5 +1,6 @@
 {
     "Extensions_directory": null,
     "UserConfig": "develop_user.zerousr",
+    "Refresh_rate": 50,
     "APIPort": 6969
 }

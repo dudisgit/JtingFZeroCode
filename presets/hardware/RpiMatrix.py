@@ -5,6 +5,10 @@ class RpiMatrix(IHardware):
     def __init__(self, config:Configuration):
         pass
 
+    @property
+    def has_inputs(self) -> bool:
+        return False
+
     @staticmethod
     def new_config() -> Configuration:
         config = Configuration()
@@ -17,6 +21,7 @@ class RpiMatrix(IHardware):
             "drop_privileges": False
         }
         return config
+    
 
-    def shutdown(self):
+    def teardown(self):
         pass

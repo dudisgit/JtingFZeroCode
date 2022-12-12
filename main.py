@@ -4,6 +4,7 @@ import argparse
 import commentjson
 
 from UserConfig import UserConfig
+from app import App
 
 LOGGING_FORMAT = "%(asctime)s [%(levelname)s]: %(message)s"
 LOGGING_LEVELS = {
@@ -63,6 +64,38 @@ def main(args:argparse.Namespace):
     
     userConfig.load_userconfig()
 
+    # Test envo
+    from hardware.Configuration import Configuration
+    rpi_conf = Configuration()
+    
+    userConfig.hardware["RpiMatrix"] = rpi_conf
+    userConfig.interfaces = [
+        {
+            "Hardware": "RpiMatrix",
+            "Name": "Test panel",
+            "Form": 1,
+            "Size": [64, 32]
+        }
+    ]
+    userConfig.sets["TestSet"] = {
+        "Name": "Testing set",
+        "Trigger_bindings": {},
+        "Animations": [
+            {
+                "Name": "Calibrate",
+                "Path": "presets.animations.Calibrate",
+                "Package": None
+            }
+        ]
+    }
+
+    app = App(userConfig)
+    app.load_hardware_and_interfaces()
+    app.load_set("TestSet")
+    app.set.change_animation("Calibrate")
+
+    logging.info("Entering main loop, precc Ctrl-C to quit")
+    app.mainloop(config["Refresh_rate"])
 
 
 if __name__ == "__main__":
