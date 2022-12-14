@@ -67,6 +67,8 @@ def main(args:argparse.Namespace):
     # Test envo
     from hardware.Configuration import Configuration
     rpi_conf = Configuration()
+    rpi_conf.width = 64
+    rpi_conf.height = 32
     
     userConfig.hardware["RpiMatrix"] = rpi_conf
     userConfig.interfaces = [
@@ -74,6 +76,7 @@ def main(args:argparse.Namespace):
             "Hardware": "RpiMatrix",
             "Name": "Test panel",
             "Form": 1,
+            "Offset": [0, 0],
             "Size": [64, 32]
         }
     ]

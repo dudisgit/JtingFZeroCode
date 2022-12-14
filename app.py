@@ -54,13 +54,24 @@ class App:
     
     def update(self):
         """ Renders the animation and updates all hardware """
+        for interface in self.interfaces.interfaces:
+            interface.reset_access_flag()
+
         if self.set is not None and self.set.current_animation is not None:
             self.set.current_animation.update()
+        
+        for interface in self.interfaces.interfaces:
+            if interface.accessed:
+                interface.paste_on_hardware()
+        
+        for hardware in self.hardware.hardware.values():
+            hardware.update()
 
     def teardown(self):
         """ Shuts down all the hardware and closes all the interfaces """
         if self.set:
             self.set.teardown()
+        self.hardware.teardown_hardware()
 
     def mainloop(self, rate:int):
         """ Continuesly runs the update method until the program is terminated
@@ -70,12 +81,12 @@ class App:
         """
         while True:
             try:
-                next_frame = time.time() + (1/rate)
+                next_frame = time.monotonic() + (1/rate)
                 self.update()
 
-                delay = next_frame - time.time()
+                delay = next_frame - time.monotonic()
                 if delay > 0:
-                    time.sleep(0)
+                    time.sleep(delay)
             except KeyboardInterrupt:
                 logging.warning("Recieved keyboard interrupt, exiting...")
                 self.teardown()

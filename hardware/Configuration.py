@@ -8,6 +8,8 @@ class Configuration:
         self.brightness = 100
         self.name = "Unnamed"
         self.args = {}
+        self.width = 0
+        self.height = 0
         self.display_values = {}  # A dictionary of values that can be displayed on the web UI
         #   These each value is a config describing its apperance, e.g. Int, bool, slider or combo box (with values)
     
@@ -20,6 +22,8 @@ class Configuration:
         self.name = config["Name"]
         self.args = config["Arguments"]
         self.brightness = config["Brightness"]
+        self.width = config["Width"]
+        self.height = config["Height"]
 
     def format_as_dictionary(self) -> dict:
         """ Formats this configuration in a way that can be saved to the user config
@@ -30,6 +34,8 @@ class Configuration:
         config = {
             "Name": self.name,
             "Arguments": self.args,
-            "Brightness": self.brightness
+            "Brightness": self.brightness,
+            "Width": self.width,
+            "Height": self.height
         }
         return config

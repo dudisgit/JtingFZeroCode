@@ -21,6 +21,11 @@ class HardwareManager:
     def hardware(self) -> Dict[str, IHardware]:
         return self._hardware
     
+    def teardown_hardware(self):
+        """ Closes down all the hardware managed by this manager """
+        for hardware in self.hardware.values():
+            hardware.teardown()
+    
     def get_default_config(self, name:str) -> Configuration:
         """ Gets the default configuration for the specified hardware
         Use this for setting up new hardware interfaces
