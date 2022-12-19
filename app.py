@@ -1,11 +1,18 @@
 import logging
 import time
+import traceback
 
 from UserConfig import UserConfig
 from hardware.HardwareManager import HardwareManager
 from hardware.InterfaceManager import InterfaceManager
 from animation.AnimationSet import AnimationSet
 from exceptions import UnknownSetException
+try:
+    from hardware.Simulator import Simulator
+except:
+    print("Simulator import failed, simulator is disabled!")
+    traceback.print_exc()
+    Simulator = None
 
 class App:
     """
@@ -20,6 +27,8 @@ class App:
         self.config = config
         self.hardware = HardwareManager()
         self.interfaces = InterfaceManager()
+        self._simulator = None
+        self._running = True
         self._set = None
     
     @property
@@ -33,6 +42,17 @@ class App:
         self.interfaces.initilize_interfaces(self.config.interfaces, self.hardware)
         self.interfaces.initilize_input_interfaces(self.hardware)
         logging.debug("Hardware and interfaces created!")
+    
+    def load_simulator_and_interfaces(self):
+        """ Loads up a simulator and user interfaces """
+        logging.info("Loading simulator and all interfaces")
+
+        assert Simulator is not None, "Simulator import failed!"
+        self.interfaces.initilize_interfaces(self.config.interfaces, self.hardware)
+        self.interfaces.initilize_input_interfaces(self.hardware)
+        self._simulator = Simulator(self.interfaces, self.signal_terminate)
+        
+        logging.info("Interfaces created!")
     
     def load_set(self, name:str):
         """ Loads the given set
@@ -60,18 +80,30 @@ class App:
         if self.set is not None and self.set.current_animation is not None:
             self.set.current_animation.update()
         
+        hardware_accessed = []  # TODO
         for interface in self.interfaces.interfaces:
             if interface.accessed:
                 interface.paste_on_hardware()
         
-        for hardware in self.hardware.hardware.values():
-            hardware.update()
+        if self._simulator:
+            self._simulator.update()
+        else:
+            for hardware in self.hardware.hardware.values():
+                hardware.update()
 
     def teardown(self):
         """ Shuts down all the hardware and closes all the interfaces """
+        logging.debug("Tearing down all sets and hardware")
         if self.set:
             self.set.teardown()
         self.hardware.teardown_hardware()
+        if self._simulator:
+            self._simulator.destroy()
+    
+    def signal_terminate(self):
+        """ Signals this application to close and teardown all hardware and interfaes safely """
+        logging.debug("Application signalled for termination")
+        self._running = False
 
     def mainloop(self, rate:int):
         """ Continuesly runs the update method until the program is terminated
@@ -79,7 +111,7 @@ class App:
         Args:
             rate: Refresh rate in hz to update the app
         """
-        while True:
+        while self._running:
             try:
                 next_frame = time.monotonic() + (1/rate)
                 self.update()
@@ -89,5 +121,6 @@ class App:
                     time.sleep(delay)
             except KeyboardInterrupt:
                 logging.warning("Recieved keyboard interrupt, exiting...")
-                self.teardown()
-                break
+                self.signal_terminate()
+
+        self.teardown()

@@ -8,10 +8,10 @@ class RpiMatrix(IHardware):
     def __init__(self, config:Configuration):
 
         options = RGBMatrixOptions()
-        options.rows = 32
-        options.chain_length = 2
-        options.parallel = 1
-        options.drop_privileges = False
+        options.rows = config.args["rows"]
+        options.chain_length = config.args["chain_length"]
+        options.parallel = config.args["parallel"]
+        options.drop_privileges = config.args["drop_privilages"]
         options.hardware_mapping = "adafruit-hat"
         self.matrix = RGBMatrix(options=options)
         self.image = Image.new("RGB", (self.matrix.width, self.matrix.height), "black")
@@ -39,4 +39,4 @@ class RpiMatrix(IHardware):
         self.matrix.SetImage(self.image)
 
     def teardown(self):
-        self.image.show()
+        pass

@@ -74,9 +74,16 @@ def main(args:argparse.Namespace):
     userConfig.interfaces = [
         {
             "Hardware": "RpiMatrix",
-            "Name": "Test panel",
+            "Name": f"Test Left",
             "Form": 1,
             "Offset": [0, 0],
+            "Size": [64, 32]
+        },
+        {
+            "Hardware": "RpiMatrix",
+            "Name": f"Test Right",
+            "Form": 1,
+            "Offset": [64, 0],
             "Size": [64, 32]
         }
     ]
@@ -93,7 +100,10 @@ def main(args:argparse.Namespace):
     }
 
     app = App(userConfig)
-    app.load_hardware_and_interfaces()
+    if args.simulate:
+        app.load_simulator_and_interfaces()
+    else:
+        app.load_hardware_and_interfaces()
     app.load_set("TestSet")
     app.set.change_animation("Calibrate")
 

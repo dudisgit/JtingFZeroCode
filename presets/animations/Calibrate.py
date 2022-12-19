@@ -1,6 +1,6 @@
 import time
 import math
-from PIL import ImageFont
+import logging
 
 from animation.IAnimation import IAnimation
 from hardware.InterfaceManager import InterfaceManager
@@ -29,7 +29,7 @@ class Calibrate(IAnimation):
         self._counter += 1
         if time.time() > self._frame_timer:
             self._frame_timer = time.time() + 1
-            print(self._counter)
+            logging.info(f"FPS: {self._counter}")
             self._counter = 0
 
         for interface in self.manager.interfaces:
@@ -49,8 +49,8 @@ class Calibrate(IAnimation):
                     # Animated point to glide accross screen
                     center = (interface.size[0]//2, interface.size[1]//2)
                     interface.draw.line((
-                        center[0] + (center[0]*(i*0.9)),
-                        center[1] + (center[1]*(i*0.9)),
+                        center[0] + (center[0]*((i*0.9)-0.1)),
+                        center[1] + (center[1]*((i*0.9)-0.1)),
                         center[0] + (center[0]*((i*0.9)+0.1)),
                         center[1] + (center[1]*((i*0.9)+0.1))
                     ), (255, 0, 255))
