@@ -1,18 +1,30 @@
+import traceback
 from PIL import Image
 from hardware.IHardware import IHardware
 from hardware.Configuration import Configuration
 
-from rgbmatrix import RGBMatrix, RGBMatrixOptions
+Import_failure = False
+try:
+    from rgbmatrix import RGBMatrix, RGBMatrixOptions
+except ImportError:
+    Import_failure = True
+    traceback.print_exc()
 
 class RpiMatrix(IHardware):
     def __init__(self, config:Configuration):
+        assert not Import_failure, "Hardware import failed"
 
         options = RGBMatrixOptions()
         options.rows = config.args["rows"]
-        options.chain_length = config.args["chain_length"]
+        options.cols = config.args["columns"]
+        options.chain_length = config.args["Chain length"]
         options.parallel = config.args["parallel"]
-        options.drop_privileges = config.args["drop_privilages"]
-        options.hardware_mapping = "adafruit-hat"
+        options.drop_privileges = config.args["Drop privileges"]
+        options.hardware_mapping = config.args["Hardware mapping"]
+        options.gpio_slowdown = int(config.args["GPIO Slowdown"])
+        if config.args["Panel type"]:
+            options.panel_type = config.args["Panel type"]
+
         self.matrix = RGBMatrix(options=options)
         self.image = Image.new("RGB", (self.matrix.width, self.matrix.height), "black")
 
@@ -23,15 +35,25 @@ class RpiMatrix(IHardware):
     @staticmethod
     def new_config() -> Configuration:
         config = Configuration()
+        config.hardware_library = "RpiMatrix"
         config.name = "RpiMatrix"
         config.brightness = 100
         config.width = 64
         config.height = 32
         config.args = {
             "rows": 32,
-            "chain_length": 4,
+            "columns": 32,
+            "Chain length": 4,
             "parallel": 1,
-            "drop_privileges": False
+            "Drop privileges": False,
+            "Hardware mapping": "adafruit-hat",
+            "Panel type": "",
+            "GPIO Slowdown": "1"
+        }
+        config.display_values = {
+            "Hardware mapping": {"Type": "Combo", "Values":
+                ["regular", "adafruit-hat", "adafruit-hat-pwm", "compute-module"]},
+            "GPIO Slowdown": {"Type": "Combo", "Values": ["0", "1", "2", "3", "4"]}
         }
         return config
     

@@ -6,6 +6,7 @@ class Configuration:
     def __init__(self):
         """ Creates an instance of Configuration """
         self.brightness = 100
+        self.hardware_library = "NotSet"
         self.name = "Unnamed"
         self.args = {}
         self.width = 0

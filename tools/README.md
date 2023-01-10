@@ -1,0 +1,1 @@
+The tools developped in this folder will mainly open a user interface, this is built for development and testing on a desktop machine and is not intended to be ran on the platform

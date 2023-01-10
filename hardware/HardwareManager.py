@@ -84,7 +84,8 @@ class HardwareManager:
             if file.endswith(".py"):
                 self.availible_hardware.append(file.strip(".py"))
 
-        for name, config in hardware_devices.items():
+        for config in hardware_devices.values():
+            name = config.hardware_library
             if name in self.availible_hardware:
                 try:
                     library = importlib.import_module(f"presets.hardware.{name}")
@@ -98,7 +99,7 @@ class HardwareManager:
                     logging.exception(f"Failed to load hardware interface {name}")
                     continue
 
-                self._hardware[name] = instance
+                self._hardware[config.name] = instance
             else:
                 raise UnknownHardwareException(f"Unkown hardware library {name}")
 

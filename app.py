@@ -55,7 +55,7 @@ class App:
         logging.info("Interfaces created!")
     
     def load_set(self, name:str):
-        """ Loads the given set
+        """ Loads the given animation set
         
         Args:
             name: The name of the set to load

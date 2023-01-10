@@ -15,8 +15,14 @@ class IHardware(metaclass=ABCMeta):
         """ Returns true if this hardware interface has input functionality """
         pass
     
-    def __init__(self):
-        """  """
+    def __init__(self, config:Configuration):
+        """ Creates an instance of the given hardware
+        This will import and setup it's bespoke hardware interfaces
+        
+        Args:
+            config: The hardware configuration to load
+        """
+        # This method exists as only boiler plate and IHardware should never be made an instance
         self.image = Image.new("RGB", (3, 3))
 
     # Required methods
